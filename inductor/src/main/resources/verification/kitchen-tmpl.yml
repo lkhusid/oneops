@@ -1,4 +1,5 @@
 #\<% load "<circuit_root>/monkey_patch.rb" %>
+#\<% ruby_path = '$([[ $OSTYPE == "cygwin" ]] && echo "c:/opscode/chef/embedded/bin" || dirname $(which ruby) )' %>
 ---
 <if(local)>
 driver:
@@ -7,14 +8,7 @@ driver:
   reset_command: "exit 0"
   transport: local
 provisioner:
-  name: chef_solo
-  cookbook_files_glob: "**/*"
-  require_chef_omnibus: false
-  chef_solo_path: /usr/local/bin/chef-solo
-  solo_rb:
-    verify_api_cert: true
-    ssl_verify_mode: :verify_peer
-    log_level: :info
+  name: dummy
 verifier:
   name: serverspec
   remote_exec: false
@@ -42,22 +36,14 @@ driver:
   username: <user>
   ssh_key: <ssh_key>
 provisioner:
-  name: chef_solo
-  cookbook_files_glob: "**/*"
-  require_chef_omnibus: false
-  chef_solo_path: <chef_solo_path>
-  root_path: <provisioner_root_path>
-  solo_rb:
-    verify_api_cert: true
-    ssl_verify_mode: :verify_peer
-    log_level: :info
+  name: dummy
 transport:
   name: rsync
   ssh_key: <ssh_key>
   username: <user>
 verifier:
   name: busser
-  ruby_bindir: <ruby_bindir>
+  ruby_bindir: \<%= ruby_path %>
   root_path: <verifier_root_path>
 platforms:
   - name: <platform_name>

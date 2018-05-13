@@ -19,11 +19,22 @@ package com.oneops.crawler;
 
 import com.oneops.Deployment;
 import com.oneops.Environment;
+import com.oneops.Organization;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractCrawlerPlugin {
-    public void processEnvironment(Environment env, List<Deployment> deployments) {
+    public void processEnvironment(Environment env, List<Deployment> deployments, Map<String, Organization> organizations) {
+        //default empty impl
+    }
+    public void processEnvironment(Environment env, Map<String, Organization> organizations) {
+        //default empty impl
+    }
+    public void init() {
+        //default empty impl
+    }
+    public void cleanup() {
         //default empty impl
     }
 }

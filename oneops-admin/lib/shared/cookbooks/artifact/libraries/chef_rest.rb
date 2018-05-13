@@ -23,11 +23,9 @@ class Chef
 
       if (accept_ranges != "bytes") || (content_length <= chunk_minimum)
         # doesn't support range request
-        file="#{local_path}.tmp"
-        download_file_single(remote_url, file)
         local_tmp = Tempfile.new(File.basename(local_path, ".*"), File.dirname(local_path))
         local_tmp.binmode
-        local_tmp.write(File.open(file, 'rb').read)
+        download_file_single(remote_url, local_tmp.path)
         local_tmp.flush
       else
         # server support range request
@@ -156,18 +154,16 @@ class Chef
       parts.each do |part|
         part_file = "#{local_path}.#{part['slot']}.tmp"
         size = File.size(part_file)
-        if part['end'] != ''
-          part_size = part['size']
-          if size != part_size
-            Chef::Log.info("slot: #{part['slot']} comparing #{part_size} == #{part['size']}   fize_size = #{size}")
-            Chef::Log.warn("File: #{part_file} does not seem to complete its download, please retry and verify")
-            failure_flag = true
-          end
+        if size != part['size']
+          Chef::Log.warn("Slot: #{part['slot']} comparing file size: #{size} to expected size: #{part['size']}")
+          Chef::Log.warn("Part size does not match downloaded file size")
+          Chef::Log.warn("File: #{part_file} seems to not have completed its download, please retry and verify")
+          failure_flag = true
         end
       end
 
       unless !failure_flag
-        Chef::Log.fatal("File: #{local_path} failed to complete its download")
+        Chef::Log.fatal("File: #{local_path} size is not what is expected")
         return nil
       end
 
@@ -236,6 +232,7 @@ class Chef
         end
 
         http.request req do |response|
+
           open local_file, 'wb' do |io|
             response.read_body do |chunk|
               io.write chunk

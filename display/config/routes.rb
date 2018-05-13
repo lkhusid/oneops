@@ -57,9 +57,12 @@ Display::Application.routes.draw do
       get  'organizations'
       get  'users'
       get  'user'
+      get  'global_admins'
       get  'cost'
       get 'deployment_to_all_primary_check'
       put 'deployment_to_all_primary_check'
+      get 'cloud_supports'
+      put 'cloud_supports'
 
       get 'organization/:name', :action => 'organization', :as => 'organization'
       # delete 'organization/:name', :action => 'organization'
